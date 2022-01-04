@@ -22,6 +22,9 @@ Uptill now, we have tested our model on the following GPU's.
 
 
 ## Data
+
+### Validation and Test Dataset
+
 - Download the KITTI depth Validation and Test set from this [URL](https://drive.google.com/file/d/1vG2sxPF1_Zmvo0tnmUbvCLVAynp_v7N1/view?usp=sharing). Please unzip the dataset folder.
 The overall data directory of the dataset is structured as follows:
 ```
@@ -41,6 +44,48 @@ The overall data directory of the dataset is structured as follows:
 |   |   |── semantics
 |   |   |── velodyne_raw
 ```
+
+### Training Dataset
+
+Please download KITTI Depth Completion Training Dataset from this [URL](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion). It is organized as follows.
+```
+├── kitti_depth
+|   ├── depth
+|   |   ├──data_depth_annotated
+|   |   |  ├── train
+|   |   |  ├── val
+|   |   ├── data_depth_velodyne
+|   |   |  ├── train
+|   |   |  ├── val
+|   |   ├── data_depth_selection
+|   |   |  ├── test_depth_completion_anonymous
+|   |   |  |── test_depth_prediction_anonymous
+|   |   |  ├── val_selection_cropped
+```
+Please download RGB images i.e. KITTI Raw data from this [URL](http://www.cvlibs.net/datasets/kitti/raw_data.php). It is structured as follows.
+
+```
+├── kitti_raw
+|   ├── 2011_09_26
+|   ├── 2011_09_28
+|   ├── 2011_09_29
+|   ├── 2011_09_30
+|   ├── 2011_10_03
+```
+ Please visit this [URL](https://drive.google.com/file/d/1Yq-vcIuu9USrpKYc9J6Svu19QiEZYf92/view?usp=sharing) to download the semanitc maps, which are also required to train our model. They are organized as follows
+```
+├── semantic_maps
+|   |── depth
+|   |   |── data_depth_selection
+|   |   |   |── val_selection_cropped
+|   |   |   |── test_depth_completion_anonymous
+|   ├── 2011_09_26
+|   ├── 2011_09_28
+|   ├── 2011_09_29
+|   ├── 2011_09_30
+|   ├── 2011_10_03
+```
+
 ## Models
 
 Please download the pre-trained model from this [URL](https://drive.google.com/file/d/1plg4zGCLYndP0xtkh_gjG1RZ4YzPeiDN/view?usp=sharing).
