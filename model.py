@@ -246,7 +246,7 @@ class three_branch_bb(nn.Module):
         output = rgb_conf*rgb_depth + d_conf*d_depth + semantic_conf * semantic_depth
         #output =  d_conf*d_depth
         
-        if(self.args.network_model == 'e'):
+        if(self.args.network_model == 'bb'):
             return rgb_depth, semantic_depth, d_depth, output
         elif(self.args.dilation_rate == 1):
             return torch.cat((rgb_feature0_plus, decoder_feature5),1), output
@@ -401,4 +401,5 @@ class A_CSPN_plus_plus(nn.Module):
 
         refined_depth = kernel_conf3*depth3 + kernel_conf5*depth5 + kernel_conf7*depth7
        
-        return rgb_conf, semantic_conf, d_conf, rgb_depth, semantic_depth, d_depth,coarse_depth,refined_depth
+        #return rgb_conf, semantic_conf, d_conf, rgb_depth, semantic_depth, d_depth,coarse_depth,refined_depth
+        return refined_depth

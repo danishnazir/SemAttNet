@@ -1,53 +1,32 @@
-# SemAttNet
-## Contents
-1. [Dependency](#dependency)
-0. [Data](#data)
-1. [Models](#models)
-2. [Commands](#commands)
+# train_code_11438
 
+This guide tells us how to reproduce SemAttNet results. Overall, we utilize an incremental training approach. In the first step, we train our novel three-branch backbone. Then, in the second step, we utilize the pre-trained backbone for training CSPN++ with Atrous convolutions. The results of our model can be verified from the The results of our model can be verified from the [official KITTI leaderboard](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion).
+
+
+## Contents
+1. Dependency
+0. Data
+0. Training Three-branch Backbone
+0. Train SemAttNet
 
 ## Dependency
-- We include a list of required packages in req.txt. We reccomend that you create a conda environment with all of the packages by running the following command.
+We include a list of required packages in req.txt. We reccomend that you create a conda environment with all of the packages by running the following command.
 ```
 conda create -n <environment-name> --file req.txt
 ```
+
 Please chose environment-name of of your choice and replace it in the command.
 
-Uptill now, we have tested our model on the following GPU's.
+Uptill now, we have tested the training of our model on the following GPU's.
+
 1. NVIDIA GTX RTX3090
-2. NVIDIA A100
-3. NVIDIA A100-80GB
-4. NVIDIA RTXA6000
-
-
+0. NVIDIA A100
+0. NVIDIA A100-80GB
+0. NVIDIA RTXA6000
 
 ## Data
 
-### Validation and Test Dataset
-
-Download the KITTI depth Validation and Test set from this [URL](https://drive.google.com/file/d/1vG2sxPF1_Zmvo0tnmUbvCLVAynp_v7N1/view?usp=sharing). Please unzip the dataset folder.
-The overall data directory of the dataset is structured as follows:
-```
-├── data_depth_selection
-|   ├── test_depth_completion_anonymous
-|   |   |── image
-|   |   |── intrinsics
-|   |   |── semantic
-|   |   |── velodyne_raw
-|   |── test_depth_prediction_anonymous
-|   |   |── image
-|   |   |── intrinsics
-|   |── val_selection_cropped
-|   |   |── groundtruth_depth
-|   |   |── image
-|   |   |── intrinsics
-|   |   |── semantics
-|   |   |── velodyne_raw
-```
-
-### Training Dataset
-
-Please download KITTI Depth Completion Training Dataset from this [URL](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion). It is organized as follows.
+Please download KITTI Depth Completion Dataset from this [URL](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion). It is organized as follows.
 ```
 ├── kitti_depth
 |   ├── depth
@@ -86,29 +65,39 @@ Please download RGB images i.e. KITTI Raw data from this [URL](http://www.cvlibs
 |   ├── 2011_10_03
 ```
 
-## Models
+## Training Three-branch Backbone
 
-Please download the pre-trained model from this [URL](https://drive.google.com/file/d/1plg4zGCLYndP0xtkh_gjG1RZ4YzPeiDN/view?usp=sharing).
+In the first step, we train our three-branch backbone consisting of color-guided (CG), semantic-guided (SG), and depth-guided (DG) branches. The command for training the three-branch backbone is given as follows.
 
-
-## Commands
-
-After you have downloaded the model and installed all of the required packages listed in req.txt, our results on KITTI validation dataset and test dataset can be validated 
-by running the following commands.
-
-### Validation Dataset
 ```
-CUDA_VISIBLE_DEVICES="0"  python main.py -n sem_att -e [path of pre-trained model i.e. model_best_backup.pth.tar] --data-folder [path of data_depth_selection folder] --val_results "val_results/"
+python main.py -n bb -b 8 --data-folder [path of depth folder inside kitti_depth e.g. kitti_depth/depth/] --data-folder-rgb [path of rgb images e.g. kitti_raw/] --data-semantic [path of semantic maps e.g. semantic_maps/] --patience 4   
 ```
-After successfull run, you can see the quantiative results summary in the table and the qualitative results can be viewed in the folder named "val_results/". Each image file inside the "val_results/" consists of Sparse, Groundtruth and Refined Depth stitched together. For example,
-<div align=center><img src="https://github.com/cvpr2022-dc/code_11438/blob/main/images/val_demo.png" width = "100%" height = "100%" /></div>
-The first image (from left) represents the LiDAR sparse depth, second represent LiDAR sparse ground truth map and third represent the output of SemAttNet. 
+We train the backbone for 60 epochs and expect the convergence at **RMSE = 753.01**. A separate directory with training logs containing Val and train CSV files with respective RMSE values will be created in training_logs/ folder.
 
 
-### Test Dataset
+## Training SemAttNet
+
+### Part 1
+
+In the first part, we initialize the CSPN++ module by running the training for **5** epochs. Moreover, we freeze the parameters in the backbone as we don't want to update the parameters of the backbone.
+
 ```
-CUDA_VISIBLE_DEVICES="0"  python main.py -n sem_att -e [path of pre-trained model i.e. model_best_backup.pth.tar] --data-folder [path of data_depth_selection folder] --test-save "test_results/" --test
+python main.py -n sem_att -b 8 --data-folder [path of depth folder inside kitti_depth e.g. kitti_depth/depth/] --data-folder-rgb [path of rgb images e.g. kitti_raw/] --data-semantic [path of semantic maps e.g. semantic_maps/] --patience 8 -f --resume [path of pretrained three-branch backbone]
 ```
-The results on test dataset are saved as 16bit depth maps in "test_results/" folder. The depths maps can be uploaded to [KITTI depth completion benchmark](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion) to validate our claims on KITTI benchmark.
+
+
+### Part 2
+
+After initialzation , we can now fully train SemAttNet. We first train till **71<sup>st</sup>** epoch with **patience = 8** and then we restart the training by setting **patience = 3**. 
+#### Patience = 8
+```
+python main.py -n sem_att -b 16 --lr 0.025298 --data-folder [path of depth folder inside kitti_depth e.g. kitti_depth/depth/] --data-folder-rgb [path of rgb images e.g. kitti_raw/] --data-semantic [path of semantic maps e.g. semantic_maps/] --patience 8 --resume [path of initialized CSPN++ model]
+```
+
+#### Patience = 3
+```
+python main.py -n sem_att -b 16 --lr 0.025298 --data-folder [path of depth folder inside kitti_depth e.g. kitti_depth/depth/] --data-folder-rgb [path of rgb images e.g. kitti_raw/] --data-semantic [path of semantic maps e.g. semantic_maps/] --patience 3 --resume [path of pre-trained SemAttNet model (till epoch = 71)]
+```
+We keep training till **95<sup>th</sup>** epoch to get the final fully trained model.
 
 

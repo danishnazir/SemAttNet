@@ -31,22 +31,13 @@ def mask_vis(mask):
     mask = 255 * mask
     return mask.astype('uint8')
 
-def save_image_gray(img_merge, filename):
-    #image_to_write = cv2.cvtColor(img_merge, cv2.COLOR_BGR2GRAY)
-    cv2.imwrite(filename, img_merge)
-    
-
-def merge_into_row(ele,  rgb_conf_final, semantic_conf_final, d_conf, rgb_depth_final,semantic_depth_final, d_depth, coarse_depth,pred, predrgb=None, predg=None, extra=None, extra2=None, extrargb=None):
+def merge_into_row(ele, pred, predrgb=None, predg=None, extra=None, extra2=None, extrargb=None):
     def preprocess_depth(x):
         y = np.squeeze(x.data.cpu().numpy())
         return depth_colorize(y)
 
     # if is gray, transforms to rgb
     img_list = []
-    img_list1 = []
-
-
-
     if 'rgb' in ele:
         rgb = np.squeeze(ele['rgb'][0, ...].data.cpu().numpy())
         rgb = np.transpose(rgb, (1, 2, 0))
@@ -57,55 +48,41 @@ def merge_into_row(ele,  rgb_conf_final, semantic_conf_final, d_conf, rgb_depth_
         semantic = np.transpose(semantic, (1, 2, 0))
         img_list.append(semantic)
 
+    elif 'g' in ele:
+        g = np.squeeze(ele['g'][0, ...].data.cpu().numpy())
+        g = np.array(Image.fromarray(g).convert('RGB'))
+        img_list.append(g)
     if 'd' in ele:
         img_list.append(preprocess_depth(ele['d'][0, ...]))
-
-    
-    if rgb_conf_final is not None:
-
-        rgb_conf_final = mask_vis(rgb_conf_final[0, ...].data.cpu().numpy())
-
-        rgb_conf_final = np.transpose(rgb_conf_final, (1, 2, 0))
-        img_list1.append(rgb_conf_final)
-        #img_list.append(preprocess_depth(semantic_conf_1[0, ...]))
-    
-    if semantic_conf_final is not None:
-        semantic_conf_final = mask_vis(semantic_conf_final[0, ...].data.cpu().numpy())
-
-        semantic_conf_final = np.transpose(semantic_conf_final, (1, 2, 0))
-        img_list1.append(semantic_conf_final)
-        #img_list.append(preprocess_depth(semantic_conf_1[0, ...]))    
-
-    if d_conf is not None:
-        d_conf = mask_vis(d_conf[0, ...].data.cpu().numpy())
-
-        d_conf = np.transpose(d_conf, (1, 2, 0))
-        img_list1.append(d_conf)
-        #img_list.append(preprocess_depth(semantic_conf_1[0, ...])) 
-
-    if rgb_depth_final is not None:
-
-        #img_list.append(preprocess_depth(semantic_conf_1[0, ...]))
-
-        img_list.append(preprocess_depth(rgb_depth_final[0, ...]))
-        img_list.append(preprocess_depth(semantic_depth_final[0, ...]))
-        img_list.append(preprocess_depth(d_depth[0, ...]))        
-        img_list.append(preprocess_depth(coarse_depth[0, ...]))        
-        img_list.append(preprocess_depth(pred[0, ...]))        
-
-
+        img_list.append(preprocess_depth(pred[0, ...]))
+    if extrargb is not None:
+        img_list.append(preprocess_depth(extrargb[0, ...]))
+    if predrgb is not None:
+        predrgb = np.squeeze(ele['rgb'][0, ...].data.cpu().numpy())
+        predrgb = np.transpose(predrgb, (1, 2, 0))
+        #predrgb = predrgb.astype('uint8')
+        img_list.append(predrgb)
+    if predg is not None:
+        predg = np.squeeze(predg[0, ...].data.cpu().numpy())
+        predg = mask_vis(predg)
+        predg = np.array(Image.fromarray(predg).convert('RGB'))
+        #predg = predg.astype('uint8')
+        img_list.append(predg)
+    if extra is not None:
+        extra = np.squeeze(extra[0, ...].data.cpu().numpy())
+        extra = mask_vis(extra)
+        extra = np.array(Image.fromarray(extra).convert('RGB'))
+        img_list.append(extra)
+    if extra2 is not None:
+        extra2 = np.squeeze(extra2[0, ...].data.cpu().numpy())
+        extra2 = mask_vis(extra2)
+        extra2 = np.array(Image.fromarray(extra2).convert('RGB'))
+        img_list.append(extra2)
     if 'gt' in ele:
-        
-        #img_list.append(preprocess_depth(pred[0, ...]))
         img_list.append(preprocess_depth(ele['gt'][0, ...]))
 
-    img_merge1 = np.hstack(img_list)
-    img_merge1 = img_merge1.astype('uint8')
-
-    img_merge2 = np.hstack(img_list1)
-    img_merge2 = img_merge2.astype('uint8')
-
-    return img_merge1, img_merge2
+    img_merge = np.hstack(img_list)
+    return img_merge.astype('uint8')
 
 
 def add_row(img_merge, row):
@@ -141,27 +118,12 @@ def save_depth_as_uint16png_upload(img, filename):
     imgsave.frombytes(img_buffer, 'raw', "I;16")
     imgsave.save(filename)
 
-def save_depth_as_uint8colored(sparse, gt, pred, filename):
+def save_depth_as_uint8colored(img, filename):
     #from tensor
-    #img = validcrop(img)
-    img_list = []
-
-    sparse = np.squeeze(sparse[0, ...]).data.cpu().numpy()
-    sparse = depth_colorize(sparse)
-    pred = np.squeeze(pred[0, ...]).data.cpu().numpy()
-    pred = depth_colorize(pred)
-
-    gt = np.squeeze(gt[0, ...]).data.cpu().numpy()
-    gt = depth_colorize(gt)
-
-    img_list.append(sparse)
-    img_list.append(gt)
-    img_list.append(pred)
-
-    img_merge1 = np.hstack(img_list)
-    img_merge1 = img_merge1.astype('uint8')
-
-    img = cv2.cvtColor(img_merge1, cv2.COLOR_RGB2BGR)
+    img = validcrop(img)
+    img = np.squeeze(img.data.cpu().numpy())
+    img = depth_colorize(img)
+    img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
     cv2.imwrite(filename, img)
 
 def save_mask_as_uint8colored(img, filename, colored=True, normalized=True):

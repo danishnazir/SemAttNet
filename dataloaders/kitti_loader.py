@@ -35,6 +35,7 @@ def get_paths_and_transform(split, args):
 
 
 
+
         def get_rgb_paths(p):
             ps = p.split('/')
             date_liststr = []
@@ -92,10 +93,10 @@ def get_paths_and_transform(split, args):
             transform = val_transform
             glob_d = os.path.join(
                 args.data_folder,
-                "val_selection_cropped/velodyne_raw/*.png")
+                "data_depth_selection/val_selection_cropped/velodyne_raw/*.png")
             glob_gt = os.path.join(
                 args.data_folder,
-                "val_selection_cropped/groundtruth_depth/*.png"
+                "data_depth_selection/val_selection_cropped/groundtruth_depth/*.png"
             )
 
             def get_rgb_paths(p):
@@ -112,16 +113,16 @@ def get_paths_and_transform(split, args):
         transform = no_transform
         glob_d = os.path.join(
             args.data_folder,
-            "test_depth_completion_anonymous/velodyne_raw/*.png"
+            "data_depth_selection/test_depth_completion_anonymous/velodyne_raw/*.png"
         )
         glob_gt = None  # "test_depth_completion_anonymous/"
         glob_rgb = os.path.join(
             args.data_folder,
-            "test_depth_completion_anonymous/image/*.png")
+            "data_depth_selection/test_depth_completion_anonymous/image/*.png")
 
         glob_semantic = os.path.join(
-            args.data_folder,
-            "test_depth_completion_anonymous/semantic/*.png")
+            args.data_semantic,
+            "depth/data_depth_selection/test_depth_completion_anonymous/image/*.png")
     elif split == "test_prediction":
         transform = no_transform
         glob_d = None
