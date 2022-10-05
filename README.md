@@ -1,5 +1,5 @@
 # SemAttNet
-Welcome to the official repository of SemAttNet: Towards Attention-based Semantic Aware Guided Depth Completion [ArXiv](https://arxiv.org/pdf/2204.13635.pdf).
+Welcome to the official repository of SemAttNet: Towards Attention-based Semantic Aware Guided Depth Completion [Arxiv](https://arxiv.org/pdf/2204.13635.pdf)
 ## Contents
 1. [Dependency](#dependency)
 0. [Data](#data)
