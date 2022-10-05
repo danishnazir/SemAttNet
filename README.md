@@ -119,3 +119,15 @@ CUDA_VISIBLE_DEVICES="0"  python main.py -n sem_att -e [path of pre-trained mode
 The results on test dataset are saved as 16bit depth maps in "test_results/" folder. The depths maps can be uploaded to [KITTI depth completion benchmark](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion) to validate our claims on KITTI benchmark.
 
 
+## Citation
+
+If you use our code or method in your work, please cite the following:
+
+```
+@article{nazir2022semattnet,
+  title={SemAttNet: Towards Attention-based Semantic Aware Guided Depth Completion},
+  author={Nazir, Danish and Liwicki, Marcus and Stricker, Didier and Afzal, Muhammad Zeshan},
+  journal={arXiv preprint arXiv:2204.13635},
+  year={2022}
+}
+```
