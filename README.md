@@ -1,4 +1,4 @@
-# train_code_11438
+# Training steps of SemAttNet
 
 This guide tells us how to reproduce SemAttNet results. Overall, we utilize an incremental training approach. In the first step, we train our novel three-branch backbone. Then, in the second step, we utilize the pre-trained backbone for training CSPN++ with Atrous convolutions. The results of our model can be verified from the The results of our model can be verified from the [official KITTI leaderboard](http://www.cvlibs.net/datasets/kitti/eval_depth.php?benchmark=depth_completion).
 
