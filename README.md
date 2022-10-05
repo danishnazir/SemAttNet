@@ -7,7 +7,7 @@
 
 
 ## Dependency
-- We include a list of required packages in req.txt. We reccomend that you create a conda environment with all of the packages by running the following command.
+We include a list of required packages in req.txt. We reccomend that you create a conda environment with all of the packages by running the following command.
 ```
 conda create -n <environment-name> --file req.txt
 ```
