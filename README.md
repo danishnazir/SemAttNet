@@ -2,6 +2,7 @@
 ## Contents
 1. [Dependency](#dependency)
 0. [Data](#data)
+0. [Training](#Training)
 1. [Models](#models)
 2. [Commands](#commands)
 
@@ -85,6 +86,10 @@ Please download RGB images i.e. KITTI Raw data from this [URL](http://www.cvlibs
 |   ├── 2011_09_30
 |   ├── 2011_10_03
 ```
+
+## Training
+
+Please select Training branch (from the top) to see the training instructions.
 
 ## Models
 
