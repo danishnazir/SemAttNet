@@ -124,10 +124,5 @@ The results on test dataset are saved as 16bit depth maps in "test_results/" fol
 If you use our code or method in your work, please cite the following:
 
 ```
-@article{nazir2022semattnet,
-  title={SemAttNet: Towards Attention-based Semantic Aware Guided Depth Completion},
-  author={Nazir, Danish and Liwicki, Marcus and Stricker, Didier and Afzal, Muhammad Zeshan},
-  journal={arXiv preprint arXiv:2204.13635},
-  year={2022}
-}
+@ARTICLE{9918022,  author={Nazir, Danish and Pagani, Alain and Liwicki, Marcus and Stricker, Didier and Afzal, Muhammad Zeshan},  journal={IEEE Access},   title={SemAttNet: Towards Attention-based Semantic Aware Guided Depth Completion},   year={2022},  volume={},  number={},  pages={1-1},  doi={10.1109/ACCESS.2022.3214316}}
 ```
